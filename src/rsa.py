@@ -1,6 +1,6 @@
 from Crypto.Util import number
 import secrets
-
+import gmpy2
 
 # 10-bit number
 def get_n_bit_random(n=10):
@@ -51,13 +51,36 @@ class RSA:
         # private decryption key
         self.dec_key = self.__dec_key_generation()
 
-    def encrypt(self):
+    def encrypt(self, message):
         # TODO: Finish @Amir
-        pass
 
-    def decrypt(self):
+        # Encode string into an int
+        # From https://stackoverflow.com/questions/55407713/how-to-encode-a-text-string-into-a-number-in-python
+        message = list(message)
+        encrypted_message = []
+        for char in message:
+            tmp = char.encode('utf-8')
+            int_char = int.from_bytes(tmp, 'little')
+
+            encrypted_message.append((int_char**self.enc_key)%self.pub_key)
+
+        return encrypted_message
+
+    def decrypt(self, encrypted_message):
         # TODO: Finish @Amir
-        pass
+        #print(encrypted_message)
+        #print(self.dec_key)
+        self.dec_key = int(self.dec_key)
+        #print(encrypted_message**self.dec_key)
+        message = []
+        for char in encrypted_message:
+            decrypted_int = (char**self.dec_key)%self.pub_key
+
+            decrypted_char = decrypted_int.to_bytes((decrypted_int.bit_length() + 7) // 8, 'little')
+            message.append(decrypted_char.decode('utf-8'))
+
+        message = "".join(message)
+        return message
 
     def __enc_key_generation(self):
         # choose e for encryption (1 < e < phi)
@@ -84,3 +107,10 @@ if __name__ == "__main__":
     print('phi(N)', rsa.phi)
     print('e', rsa.enc_key)
     print('d', rsa.dec_key)
+    print("--------------")
+    message = "Hello Planet"
+    print("Message: " + message)
+    encrypted_message = rsa.encrypt(message)
+    print("Encrypted Message: " + str(encrypted_message))
+    decrypted_message = rsa.decrypt(encrypted_message)
+    print("Decrypted Message: " + decrypted_message)
