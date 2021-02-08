@@ -56,10 +56,13 @@ class RSA:
 
         # Encode string into an int
         # From https://stackoverflow.com/questions/55407713/how-to-encode-a-text-string-into-a-number-in-python
-        message = message.encode('utf-8')
-        int_message = int.from_bytes(message, 'little')
+        message = list(message)
+        encrypted_message = []
+        for char in message:
+            tmp = char.encode('utf-8')
+            int_char = int.from_bytes(tmp, 'little')
 
-        encrypted_message = (int_message**self.enc_key)%self.pub_key
+            encrypted_message.append((int_char**self.enc_key)%self.pub_key)
 
         return encrypted_message
 
@@ -69,10 +72,14 @@ class RSA:
         #print(self.dec_key)
         self.dec_key = int(self.dec_key)
         #print(encrypted_message**self.dec_key)
-        decrypted_int = (encrypted_message**self.dec_key)%self.pub_key
+        message = []
+        for char in encrypted_message:
+            decrypted_int = (char**self.dec_key)%self.pub_key
 
-        message = decrypted_int.to_bytes((decrypted_int.bit_length() + 7) // 8, 'little')
-        message = message.decode('utf-8')
+            decrypted_char = decrypted_int.to_bytes((decrypted_int.bit_length() + 7) // 8, 'little')
+            message.append(decrypted_char.decode('utf-8'))
+            
+        message = "".join(message)
         return message
 
     def __enc_key_generation(self):
