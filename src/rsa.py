@@ -1,6 +1,7 @@
 from Crypto.Util import number
 import secrets
 import gmpy2
+from gmpy2 import mpz,mpq,mpfr,mpc
 
 # 10-bit number
 def get_n_bit_random(n=10):
@@ -62,7 +63,7 @@ class RSA:
             tmp = char.encode('utf-8')
             int_char = int.from_bytes(tmp, 'little')
 
-            encrypted_message.append((int_char**self.enc_key)%self.pub_key)
+            encrypted_message.append((mpz(int_char)**mpz(self.enc_key))%mpz(self.pub_key))
 
         return encrypted_message
 
@@ -74,7 +75,8 @@ class RSA:
         #print(encrypted_message**self.dec_key)
         message = []
         for char in encrypted_message:
-            decrypted_int = (char**self.dec_key)%self.pub_key
+            decrypted_int = (char**mpz(self.dec_key))%mpz(self.pub_key)
+            decrypted_int = int(decrypted_int)
 
             decrypted_char = decrypted_int.to_bytes((decrypted_int.bit_length() + 7) // 8, 'little')
             message.append(decrypted_char.decode('utf-8'))
@@ -108,7 +110,7 @@ if __name__ == "__main__":
     print('e', rsa.enc_key)
     print('d', rsa.dec_key)
     print("--------------")
-    message = "Hello Planet"
+    message = input("Please type your message: ")
     print("Message: " + message)
     encrypted_message = rsa.encrypt(message)
     print("Encrypted Message: " + str(encrypted_message))
