@@ -1,6 +1,6 @@
 from Crypto.Util import number
 import secrets
-
+import gmpy2
 
 # 10-bit number
 def get_n_bit_random(n=10):
@@ -78,7 +78,7 @@ class RSA:
 
             decrypted_char = decrypted_int.to_bytes((decrypted_int.bit_length() + 7) // 8, 'little')
             message.append(decrypted_char.decode('utf-8'))
-            
+
         message = "".join(message)
         return message
 
