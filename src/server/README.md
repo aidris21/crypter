@@ -9,7 +9,7 @@ yarn
 ## How to Run the Server
 
 ```
-yarn startw
+yarn start
 ```
 
 ## Run Server with Autorestart
