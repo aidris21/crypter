@@ -34,6 +34,7 @@ app.use((err, _req, res, _next) => {
     }
 
     // TODO: some error parsing
+    console.log(err);
     jsonError(res, err.message, 500);
 });
 

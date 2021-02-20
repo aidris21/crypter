@@ -7,8 +7,8 @@ async function listMessages(req, res) {
         return jsonError(res, "'currUser' is a required query param", 400);
     }
 
-    if (!req.query.from) {
-        return jsonError(res, "'from' is a required query param", 400);
+    if (!req.query.otherUser) {
+        return jsonError(res, "'otherUser' is a required query param", 400);
     }
 
     const startFrom = Number(req.query.startFrom);
@@ -20,8 +20,8 @@ async function listMessages(req, res) {
     res.json({
         messages: await messagesService.list(
             req.query.currUser,
-            req.query.from,
-            startFrom || undefined,
+            req.query.otherUser,
+            startFrom || 0,
         ),
     });
 }
@@ -45,12 +45,12 @@ async function sendMessage(req, res) {
         );
     }
 
-    if (!req.query.from) {
-        return jsonError(res, "'from' is a required query param.", 400);
+    if (!req.query.currUser) {
+        return jsonError(res, "'currUser' is a required query param.", 400);
     }
 
     await messagesService.send(
-        req.query.from,
+        req.query.currUser,
         incomingMessage.to,
         incomingMessage.text,
     );

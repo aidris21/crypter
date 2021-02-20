@@ -24,7 +24,7 @@ class MessagesService {
         ];
     }
 
-    async list(currentUser, from, startFrom = 0) {
+    async list(currentUser, otherUser, startFrom = 0) {
         if (!(await usersService.exists(currentUser))) {
             throw new ResponseError(
                 "You are trying to get messages of a user who doesn't exist.",
@@ -32,7 +32,7 @@ class MessagesService {
             );
         }
 
-        if (!(await usersService.exists(from))) {
+        if (!(await usersService.exists(otherUser))) {
             throw new ResponseError(
                 "You are trying to get messages from a user who doesn't exist.",
                 400,
@@ -44,8 +44,8 @@ class MessagesService {
         return this._storage.filter(
             (message) =>
                 message.sentAt > startFrom &&
-                ((message.from === from && message.to === currentUser) ||
-                    (message.from === currentUser && message.to === from)),
+                ((message.from === otherUser && message.to === currentUser) ||
+                    (message.from === currentUser && message.to === otherUser)),
         );
     }
 
