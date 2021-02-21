@@ -11,9 +11,13 @@ class Main:
 
         self.master = master
         self.frame = tk.Frame(self.master)
+        self.topframe = tk.Frame(self.master)
+        self.toplabel = tk.Label(self.topframe, text="Welcome")
         self.button1 = tk.Button(self.frame, text = 'New Window', width = 25, command = self.new_window)
         self.button1.pack()
-        self.frame.pack()
+        self.frame.pack(side=tk.BOTTOM)
+        self.topframe.pack( side=tk.TOP )
+        self.toplabel.pack()
 
         self.set_dims()
 
