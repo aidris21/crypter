@@ -6,24 +6,56 @@ import tkinter as tk
 
 class Main:
     def __init__(self, master):
-        self.width = 800
-        self.height = 500
-
+        self.width = 600
+        self.height = 400
         self.master = master
-        self.frame = tk.Frame(self.master)
-        self.topframe = tk.Frame(self.master)
-        self.toplabel = tk.Label(self.topframe, text="Welcome")
-        self.button1 = tk.Button(self.frame, text = 'New Window', width = 25, command = self.new_window)
-        self.button1.pack()
-        self.frame.pack(side=tk.BOTTOM)
-        self.topframe.pack( side=tk.TOP )
-        self.toplabel.pack()
+        #self.bottomframe = tk.Frame(self.master)
 
-        self.set_dims()
+        #self.topframe = tk.Frame(self.master)
+        self.toplabel = tk.Label(text="Welcome")
+        #self.topframe.grid()
+        self.toplabel.grid(row=0, columnspan=2)
+
+        self.draw_login()
+
+        #self.bottomframe.grid(row=4)
+        
+
+        #self.button1 = tk.Button(self.frame, text = 'New Window', width = 25, command = self.new_window)
+        #self.button1.pack()
+
+        #self.set_dims()
 
     def set_dims(self):
         dim_string = str(self.width) + "x" + str(self.height)
         self.master.geometry(dim_string)
+
+    def draw_login(self):
+        self.name_var=tk.StringVar()
+        self.password_var=tk.StringVar()
+
+        self.username_label = tk.Label(text="Username:")
+        self.password_label = tk.Label(text="Password:")
+        self.username_entry = tk.Entry(self.master, textvariable = self.name_var)
+        self.password_entry = tk.Entry(self.master, textvariable = self.password_var)
+        self.username_label.grid(row=1, column=0, sticky=tk.E)
+        self.password_label.grid(row=2, column=0, sticky=tk.E)
+        self.username_entry.grid(row=1, column = 1)
+        self.password_entry.grid(row=2, column = 1)
+
+        submit_btn=tk.Button(self.master,text = 'Submit', command = self.submit)
+        submit_btn.grid(row=3,columnspan=2)
+
+    # Credit to: https://www.geeksforgeeks.org/python-tkinter-entry-widget/
+    def submit(self):
+        name=self.name_var.get()
+        password=self.password_var.get()
+     
+        print("The name is : " + name)
+        print("The password is : " + password)
+     
+        self.name_var.set("")
+        self.password_var.set("")
 
 
     def new_window(self):
