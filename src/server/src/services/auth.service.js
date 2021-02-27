@@ -2,29 +2,17 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
 const { ResponseError } = require("../shared/errors");
+const UserModel = require("../models/User.model");
 
 const VERY_PRIVATE_KEY = "321blah";
 
 class AuthService {
-    constructor() {
-        this._storage = {
-            olha: {
-                _id: "1",
-                username: "olha",
-                password:
-                    "$2b$05$oGr2FohljfSoOgQzKaFxh.LQt1QRsBrXCvY8l1C5bzjjAmMhWTwgC", // hello
-            },
-            amir: {
-                _id: "2",
-                username: "amir",
-                password:
-                    "$2b$05$.VLWSDL6tKLqFHeVcSQE5OfuctxsDakIMYsH7nUGqf4wVpY5fbBga", // columbia
-            },
-        };
+    constructor(model) {
+        this.model = model;
     }
 
     async login(username, password) {
-        const user = this._storage[username];
+        const user = await this.model.where({ username }).findOne();
 
         if (
             !(await bcrypt.compare(
@@ -49,4 +37,4 @@ class AuthService {
     }
 }
 
-module.exports = new AuthService();
+module.exports = new AuthService(UserModel);

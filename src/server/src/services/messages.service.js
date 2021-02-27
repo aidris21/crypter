@@ -1,27 +1,13 @@
 // here we check that all params are correct (logic-wise)
 
+const MessageModel = require("../models/Message.model");
 const { ResponseError } = require("../shared/errors");
 const usersService = require("./users.service");
 
 // all business logic goes here
 class MessagesService {
-    constructor() {
-        this._storage = [
-            {
-                _id: 1,
-                text: "Hello, I am Olha!",
-                from: "1",
-                to: "2",
-                sentAt: 1613859989227,
-            },
-            {
-                _id: 2,
-                text: "Hello, I am Amir!",
-                from: "2",
-                to: "1",
-                sentAt: 1613859989300,
-            },
-        ];
+    constructor(model) {
+        this.model = model;
     }
 
     async list(currentUser, otherUser, startFrom = 0) {
@@ -39,14 +25,19 @@ class MessagesService {
             );
         }
 
-        console.log(this._storage);
-
-        return this._storage.filter(
-            (message) =>
-                message.sentAt > startFrom &&
-                ((message.from === otherUser && message.to === currentUser) ||
-                    (message.from === currentUser && message.to === otherUser)),
-        );
+        return this.model.find({
+            ...(startFrom && { createdAt: { $gt: startFrom } }),
+            $or: [
+                {
+                    from: otherUser,
+                    to: currentUser,
+                },
+                {
+                    from: currentUser,
+                    to: otherUser,
+                },
+            ],
+        });
     }
 
     async send(from, to, text) {
@@ -68,14 +59,9 @@ class MessagesService {
             );
         }
 
-        this._storage.push({
-            from,
-            to,
-            text,
-            sentAt: Date.now(),
-            _id: this._storage.length + 1,
-        });
+        const message = new this.model({ from, to, text });
+        message.save();
     }
 }
 
-module.exports = new MessagesService();
+module.exports = new MessagesService(MessageModel);

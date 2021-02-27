@@ -3,6 +3,7 @@ require("express-async-errors");
 
 const bodyParser = require("body-parser");
 const express = require("express");
+require("./src/shared/db");
 
 const {
     listUsersController,
@@ -44,3 +45,5 @@ app.use((err, _req, res, _next) => {
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
 });
+
+// Mongo setup: https://dev.to/sunilksamanta/rest-api-structure-using-nodejs-mongodb-mongoose-2hka
