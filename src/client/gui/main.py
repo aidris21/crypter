@@ -10,21 +10,23 @@ class Main:
         self.height = 400
         self.master = master
         #self.bottomframe = tk.Frame(self.master)
+        #self.bottomframe.grid(row=4)
 
-        #self.topframe = tk.Frame(self.master)
-        self.toplabel = tk.Label(text="Welcome")
-        #self.topframe.grid()
+        self.topframe = tk.Frame(self.master, width = 100, height= 50)
+        #self.topframe.pack(side=tk.TOP)
+        self.topframe.grid(row = 5, columnspan=3)
+        self.toplabel = tk.Label(text="Welcome", anchor=tk.CENTER)
         self.toplabel.grid(row=0, columnspan=2)
 
         self.draw_login()
-
-        #self.bottomframe.grid(row=4)
         
 
-        #self.button1 = tk.Button(self.frame, text = 'New Window', width = 25, command = self.new_window)
-        #self.button1.pack()
+        self.button1 = tk.Button(self.topframe, text = 'New Window', width = 25, command = self.new_window)
+        self.button1.grid(row=4, columnspan=3)
 
         #self.set_dims()
+
+        self.master.mainloop()
 
     def set_dims(self):
         dim_string = str(self.width) + "x" + str(self.height)
@@ -76,7 +78,6 @@ class Demo2:
 def main(): 
     root = tk.Tk(className="crypter")
     app = Main(root)
-    root.mainloop()
 
 if __name__ == '__main__':
     main()
