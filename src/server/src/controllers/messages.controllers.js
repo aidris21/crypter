@@ -1,11 +1,14 @@
 // Here we interpret the request
+const authService = require("../services/auth.service");
 const messagesService = require("../services/messages.service");
 const { jsonError } = require("../shared/errors");
 
 async function listMessages(req, res) {
-    if (!req.query.currUser) {
-        return jsonError(res, "'currUser' is a required query param", 400);
+    if (!req.query.accessToken) {
+        return jsonError(res, "'accessToken' is a required query param", 400);
     }
+
+    const { _id: currUser } = await authService.validate(req.query.accessToken);
 
     if (!req.query.otherUser) {
         return jsonError(res, "'otherUser' is a required query param", 400);
@@ -19,7 +22,7 @@ async function listMessages(req, res) {
 
     res.json({
         messages: await messagesService.list(
-            req.query.currUser,
+            currUser,
             req.query.otherUser,
             startFrom || 0,
         ),
@@ -28,6 +31,12 @@ async function listMessages(req, res) {
 
 async function sendMessage(req, res) {
     const { message: incomingMessage } = req.body;
+
+    if (!req.query.accessToken) {
+        return jsonError(res, "'accessToken' is a required query param", 400);
+    }
+
+    const { _id: currUser } = await authService.validate(req.query.accessToken);
 
     if (!incomingMessage) {
         return jsonError(
@@ -45,12 +54,8 @@ async function sendMessage(req, res) {
         );
     }
 
-    if (!req.query.currUser) {
-        return jsonError(res, "'currUser' is a required query param.", 400);
-    }
-
     await messagesService.send(
-        req.query.currUser,
+        currUser,
         incomingMessage.to,
         incomingMessage.text,
     );

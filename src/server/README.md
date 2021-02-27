@@ -28,7 +28,7 @@ yarn dev
 
 **Params:**
 
--   `currUser` - **optional** query param, id of a user to filter out.
+-   `accessToken` - **optional** query param, retrieved from login endpoint.
 
 Examples:
 
@@ -59,7 +59,7 @@ Examples:
 
 **Params:**
 
--   `currUser` - **required** query param, id of a current user
+-   `accessToken` - **required** query param, retrieved from login endpoint.
 -   `otherUser` - **required** query param, id of another user
 -   `startFrom` - **optional** query param, timestamp in milliseconds of the last message that client has. Filters out messages with `sentAt` older than that
 
@@ -76,7 +76,7 @@ Examples:
 
 **Params:**
 
--   `currUser` - **required** query param, id of a current user
+-   `accessToken` - **required** query param, retrieved from login endpoint.
 -   `message` - **required** body param, message object JSON
 -   `message.to` - **required** body param, id of a user to send a message to
 -   `message.text` - **required** body param, text of a message
@@ -91,5 +91,27 @@ Examples:
         "to": "2",
         "text": "Hello, I am Olha"
     }
+}
+```
+
+<hr>
+
+### Login
+
+**POST http://localhost:3000/login** - login
+
+**Params:**
+
+-   `password` - **required** body param
+-   `username` - **required** body param
+
+Examples:
+
+-   POST: http://localhost:3000/login
+
+```json
+{
+    "password": "helloworld",
+    "username": "olha"
 }
 ```

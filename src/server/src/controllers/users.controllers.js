@@ -1,11 +1,17 @@
+const authService = require("../services/auth.service");
 const usersService = require("../services/users.service");
 const { jsonError } = require("../shared/errors");
 
 async function listUsersController(req, res) {
-    const { currUser } = req.query;
+    const token = req.query.accessToken;
+    let _id;
+
+    if (token) {
+        ({ _id } = await authService.validate(token));
+    }
 
     res.json({
-        users: await usersService.list(currUser),
+        users: await usersService.list(_id),
     });
 }
 

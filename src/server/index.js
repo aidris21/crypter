@@ -13,6 +13,7 @@ const {
     listMessages,
 } = require("./src/controllers/messages.controllers");
 const { ResponseError, jsonError } = require("./src/shared/errors");
+const { loginController } = require("./src/controllers/auth.controller");
 
 const app = express();
 const port = 3000;
@@ -26,6 +27,8 @@ app.get("/users/:id", getUserController);
 
 app.get("/messages", listMessages);
 app.post("/messages", sendMessage);
+
+app.post("/login", loginController);
 
 // eslint-disable-next-line no-unused-vars
 app.use((err, _req, res, _next) => {
