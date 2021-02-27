@@ -3,6 +3,7 @@
     # structure credit: https://stackoverflow.com/questions/17466561/best-way-to-structure-a-tkinter-application
 
 import tkinter as tk
+from contacts import Contacts
 
 class Main:
     def __init__(self, master):
@@ -21,8 +22,8 @@ class Main:
         self.draw_login()
         
 
-        self.button1 = tk.Button(self.topframe, text = 'New Window', width = 25, command = self.new_window)
-        self.button1.grid(row=4, columnspan=3)
+        #self.button1 = tk.Button(self.topframe, text = 'Create New Account', width = 25, command = self.new_window)
+        #self.button1.grid(row=4, columnspan=3)
 
         #self.set_dims()
 
@@ -55,25 +56,21 @@ class Main:
      
         print("The name is : " + name)
         print("The password is : " + password)
+
+        self.login(name, password)
      
         self.name_var.set("")
         self.password_var.set("")
 
 
-    def new_window(self):
-        self.newWindow = tk.Toplevel(self.master)
-        self.app = Demo2(self.newWindow)
+    def login(self, username, password):
+        if username == "test" and password == "test":
+            self.master.destroy()
+            root = tk.Tk(className="crypter")
+            app = Contacts(root)
 
-class Demo2:
-    def __init__(self, master):
-        self.master = master
-        self.frame = tk.Frame(self.master)
-        self.quitButton = tk.Button(self.frame, text = 'Quit', width = 25, command = self.close_windows)
-        self.quitButton.pack()
-        self.frame.pack()
-    
-    def close_windows(self):
-        self.master.destroy()
+
+
 
 def main(): 
     root = tk.Tk(className="crypter")
