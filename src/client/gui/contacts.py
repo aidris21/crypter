@@ -3,6 +3,7 @@
     # structure credit: https://stackoverflow.com/questions/17466561/best-way-to-structure-a-tkinter-application
 
 import tkinter as tk
+from messaging import Messaging
 
 class Contacts:
     def __init__(self, master):
@@ -39,8 +40,10 @@ class Contacts:
         return contact_list
 
     def select_contact(self):
-        selected = self.listbox.curselection()
-        print(selected)
+        selected = str(self.listbox.curselection()[0])
+        self.master.destroy()
+        root = tk.Tk(className=selected)
+        app = Messaging(root, selected)
 
 if __name__ == "__main__":
     root = tk.Tk(className="crypter")
