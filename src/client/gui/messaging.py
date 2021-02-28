@@ -68,6 +68,8 @@ class Messaging:
         self.time_counter += 1
         message_data = (self.time_counter, "me", message)
         self.message_list.append(message_data)
+
+        post_message(user = "me", message)
      
         self.message_text.set("")
 
