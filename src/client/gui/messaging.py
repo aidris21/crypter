@@ -73,6 +73,8 @@ class Messaging:
         message=self.message_text.get()
         to = self.contact["_id"]
 
+        # Encrypt message
+
         status = query.post_message(message, self.token, to)
 
         self.message_text.set("")
