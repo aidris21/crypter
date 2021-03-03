@@ -1,30 +1,96 @@
 import requests as rq
-
-API_ENDPOINT = "http://localhost:3000/users"
-
-r = rq.get(API_ENDPOINT)
-
-foo = r.json()
+import json
 
 
-def post_message(message, user_from = "6039a7c8cfcf715977b2365a", user_to = "6039a891cfcf715977b2365c"):
-    endpoint = "http://localhost:3000/messages?currUser=6039a7c8cfcf715977b2365a?accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFtaXIiLCJfaWQiOiI2MDM5YTg5MWNmY2Y3MTU5NzdiMjM2NWMiLCJpYXQiOjE2MTQzOTI4NDF9._jut8uuDV9MWV4rGzBJnXSDmmFarE92P_P4gGVW7Eq8"
+def login(username, password):
+    endpoint = "http://localhost:3000/login"
+    headers = {'Content-type': 'application/json'}
+    data = {
+        "username": username,
+        "password": password
+    }
+
+    r = rq.post(url = endpoint, data=json.dumps(data), headers=headers)
+
+    post_return = r.json()
+
+    token = post_return["accessToken"]
+
+    return token
+
+def post_message(message, token, user_to = "6039a891cfcf715977b2365c"):
+    endpoint = "http://localhost:3000/messages"
+    headers = {'Content-type': 'application/json'}
     data = {
         "message": {
-            "to": "6039a891cfcf715977b2365c",
+            "to": user_to,
             "text": message
         }
     }
-    rq.post(url = endpoint, data=data)
+    param = {
+        "accessToken": token
+    }
+    r = rq.post(url = endpoint, data=json.dumps(data), headers = headers, params=param)
+    post_return = r.json()
+
+    return post_return["status"]
+
+def get_contacts():
+    API_ENDPOINT = "http://localhost:3000/users"
+
+    r = rq.get(API_ENDPOINT)
+
+    get_return = r.json()
+
+    return get_return["users"]
+
+
+
+"""----------------------------------------"""
+
+def get_users():
+    API_ENDPOINT = "http://localhost:3000/users"
+
+    r = rq.get(API_ENDPOINT)
+
+    foo = r.json()
+
+    return foo
+
+def login_amir():
+    endpoint = "http://localhost:3000/login"
+    headers = {'Content-type': 'application/json'}
+    data = {
+        "username": "amir",
+        "password": "columbia"
+    }
+
+    r = rq.post(url = endpoint, data=json.dumps(data), headers=headers)
+
+    foo = r.json()
+
+    return foo
 
 
 if __name__ == "__main__":
-    post_message(message = "Hello Hello")
+    #post_message(message = "Hello Hello")
+
+    """token = login_amir()["accessToken"]
+    print(token)
+
+    message_send = post_message("hey there", token)
+    print(message_send)
 
     endpoint = "http://localhost:3000/messages"
-    r = rq.get(endpoint)
+    data = {
+        "accessToken": token,
+        "otherUser": "6039a891cfcf715977b2365c"
+    }
+    r = rq.get(endpoint, params=data)
     foo = r.json()
-    print(foo)
+    print(foo)"""
+
+    print(get_users())
 
 
     
