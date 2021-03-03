@@ -1,3 +1,6 @@
+# Collection of REST API requests methods
+# Written by Amir Idris, 2021
+
 import requests as rq
 import json
 
@@ -35,7 +38,7 @@ def post_message(message, token, user_to = "6039a891cfcf715977b2365c"):
 
     return post_return["status"]
 
-def get_contacts():
+def get_contacts(token = None):
     API_ENDPOINT = "http://localhost:3000/users"
 
     r = rq.get(API_ENDPOINT)
@@ -43,6 +46,18 @@ def get_contacts():
     get_return = r.json()
 
     return get_return["users"]
+
+def get_messages(token, other_user):
+    endpoint = "http://localhost:3000/messages"
+    data = {
+        "accessToken": token,
+        "otherUser": other_user
+    }
+
+    r = rq.get(endpoint, params=data)
+    get_return = r.json()
+
+    return get_return["messages"]
 
 
 
@@ -75,7 +90,7 @@ def login_amir():
 if __name__ == "__main__":
     #post_message(message = "Hello Hello")
 
-    """token = login_amir()["accessToken"]
+    token = login_amir()["accessToken"]
     print(token)
 
     message_send = post_message("hey there", token)
@@ -88,7 +103,7 @@ if __name__ == "__main__":
     }
     r = rq.get(endpoint, params=data)
     foo = r.json()
-    print(foo)"""
+    print(foo)
 
     print(get_users())
 

@@ -4,6 +4,7 @@
 
 import tkinter as tk
 from contacts import Contacts
+import query
 
 class Main:
     def __init__(self, master):
@@ -53,9 +54,6 @@ class Main:
     def submit(self):
         name=self.name_var.get()
         password=self.password_var.get()
-     
-        print("The name is : " + name)
-        print("The password is : " + password)
 
         self.login(name, password)
      
@@ -64,13 +62,13 @@ class Main:
 
 
     def login(self, username, password):
-        if username == "test" and password == "test":
-            self.master.destroy()
-            root = tk.Tk(className="crypter")
-            app = Contacts(root)
+        token = query.login(username, password)
 
+        self.master.destroy()
+        root = tk.Tk(className="crypter")
+        app = Contacts(root, token)
 
-
+        
 
 def main(): 
     root = tk.Tk(className="crypter")
