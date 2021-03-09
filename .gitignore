@@ -130,3 +130,6 @@ dmypy.json
 
 # Conversation Logs
 conversations/
+
+# Private Key
+private_key/

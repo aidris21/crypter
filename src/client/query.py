@@ -38,6 +38,21 @@ def post_message(message, token, user_to = "6039a891cfcf715977b2365c"):
 
     return post_return["status"]
 
+def post_account(name, username, password, public_key):
+    endpoint = "http://localhost:3000/signup"
+    headers = {'Content-type': 'application/json'}
+    data = {
+    "password": password,
+    "username": username,
+    "name": name,
+    "publicKey": public_key
+    }
+    r = rq.post(url = endpoint, data=json.dumps(data), headers = headers)
+    post_return = r.json()
+
+    return post_return["status"]
+
+
 def get_contacts(token = None):
     API_ENDPOINT = "http://localhost:3000/users"
 

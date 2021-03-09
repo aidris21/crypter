@@ -46,42 +46,11 @@ class RSA:
         # public key
         self.pub_key = self.prime1 * self.prime2
         self.enc_key = self.__enc_key_generation()
+        self.public_key = (self.enc_key, self.pub_key)
         # find num of co-prime numbers
         self.phi = (self.prime1 - 1) * (self.prime2 - 1)
         # private decryption key
-        self.dec_key = self.__dec_key_generation()
-
-    def encrypt(self, message):
-        # TODO: Finish @Amir
-
-        # Encode string into an int
-        # From https://stackoverflow.com/questions/55407713/how-to-encode-a-text-string-into-a-number-in-python
-        message = list(message)
-        encrypted_message = []
-        for char in message:
-            tmp = char.encode('utf-8')
-            int_char = int.from_bytes(tmp, 'little')
-
-            encrypted_message.append((mpz(int_char)**mpz(self.enc_key))%mpz(self.pub_key))
-
-        return encrypted_message
-
-    def decrypt(self, encrypted_message):
-        # TODO: Finish @Amir
-        #print(encrypted_message)
-        #print(self.dec_key)
-        self.dec_key = int(self.dec_key)
-        #print(encrypted_message**self.dec_key)
-        message = []
-        for char in encrypted_message:
-            decrypted_int = (char**mpz(self.dec_key))%mpz(self.pub_key)
-            decrypted_int = int(decrypted_int)
-
-            decrypted_char = decrypted_int.to_bytes((decrypted_int.bit_length() + 7) // 8, 'little')
-            message.append(decrypted_char.decode('utf-8'))
-
-        message = "".join(message)
-        return message
+        self.private_key = self.__dec_key_generation()
 
     def __enc_key_generation(self):
         # choose e for encryption (1 < e < phi)
@@ -97,6 +66,39 @@ class RSA:
         # choose d for decryption
         # such that d*e mod phi = 1
         return mod_inverse(self.enc_key, self.phi)
+
+
+def encrypt(message, public_key):
+        # TODO: Finish @Amir
+
+        # Encode string into an int
+        # From https://stackoverflow.com/questions/55407713/how-to-encode-a-text-string-into-a-number-in-python
+        message = list(message)
+        encrypted_message = []
+        for char in message:
+            tmp = char.encode('utf-8')
+            int_char = int.from_bytes(tmp, 'little')
+
+            encrypted_message.append((mpz(int_char)**mpz(public_key[0]))%mpz(public_key[1]))
+
+        return encrypted_message
+
+def decrypt(encrypted_message, decryption_key, public_key):
+        # TODO: Finish @Amir
+        #print(encrypted_message)
+        #print(self.dec_key)
+        self.dec_key = int(self.dec_key)
+        #print(encrypted_message**self.dec_key)
+        message = []
+        for char in encrypted_message:
+            decrypted_int = (char**mpz(decryption_key))%mpz(public_key[1])
+            decrypted_int = int(decrypted_int)
+
+            decrypted_char = decrypted_int.to_bytes((decrypted_int.bit_length() + 7) // 8, 'little')
+            message.append(decrypted_char.decode('utf-8'))
+
+        message = "".join(message)
+        return message
 
 
 if __name__ == "__main__":

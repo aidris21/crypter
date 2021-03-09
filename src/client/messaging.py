@@ -11,6 +11,7 @@ import os
 import pathlib
 
 import query
+from encrypt.rsa import encrypt, decrypt, RSA
 
 class Messaging:
     def __init__(self, master, token, contact = None):
@@ -20,6 +21,7 @@ class Messaging:
         self.contact = contact
         self.contact_id = self.contact["_id"]
         self.contact_name = self.contact["name"]
+        self.contact_key = self.contact["publicKey"]
 
         # Find conversations folder
         root = os.getcwd()
@@ -28,6 +30,14 @@ class Messaging:
                 if "conversations" in directory:
                     found = os.path.join(path, directory)
         self.conversation_path = found + "/" + self.contact_id + ".txt"
+
+        # Find private_key folder
+        root = os.getcwd()
+        for path, subdirs, files in os.walk(root):
+            for directory in subdirs:
+                if "private_key" in directory:
+                    found = os.path.join(path, directory)
+        self.private_key_path = found + "/" + "key.txt"
 
         self.draw_messagebox()
         self.draw_messages()
@@ -89,8 +99,10 @@ class Messaging:
             f.write(content + "\n")
 
         # Encrypt message
+        encrypted_message = encrypt(message, self.contact_key)
 
-        status = query.post_message(message, self.token, to)
+        status = query.post_message(encrypted_message, self.token, to)
+        print(status)
 
         self.message_text.set("")
         self.frame.pack_forget()
@@ -140,6 +152,7 @@ class Messaging:
         
         f.close()
 
+    # Decrypt incoming messages and compile content
     def compile_message(self, message):
             user_from = message["from"]
             if user_from == self.contact_id:
@@ -152,9 +165,25 @@ class Messaging:
                 datetime_obj = datetime.datetime.strptime(timestamp, '%Y-%m-%d%H:%M:%S.%f')
                 unix_time = time.mktime(datetime_obj.timetuple())
 
-                content = str(timestamp) + "," + str(user_from) + "," + message["text"]
+                # Decrypt
+                decrypted_message = self.decrypt_message(message["text"])
+
+                content = str(timestamp) + "," + str(user_from) + "," + decrypted_message
 
                 return content
+
+    def decrypt_message(self, message):
+        
+        with open(self.private_key_path, 'r') as f:
+                lines = f.read().splitlines()
+                public_e = int(lines[0].split(":")[1])
+                public_n = int(lines[1].split(":")[1])
+                public_key = (public_e, public_n)
+                private_key = int(lines[2].split(":")[1])
+
+        decrypted_message = decrypt(message, private_key, public_key)
+
+        return decrypted_message
 
 
     
@@ -170,3 +199,4 @@ if __name__ == "__main__":
     print(time.mktime(foo.timetuple()))
     print(datetime.datetime.now(pytz.utc))
     print(time.time()*1000)
+    print(os.getcwd())
