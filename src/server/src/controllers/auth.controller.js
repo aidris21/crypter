@@ -17,4 +17,20 @@ async function loginController(req, res) {
     });
 }
 
-module.exports = { loginController };
+async function signupController(req, res) {
+    const { name, username, password, publicKey } = req.body;
+
+    if (!username || !password || !name || !publicKey) {
+        return jsonError(
+            res,
+            "'username', 'password', 'name', 'publicKey' are required body params.",
+            400,
+        );
+    }
+
+    await authService.signup(name, username, password, publicKey);
+
+    res.status(201).send();
+}
+
+module.exports = { loginController, signupController };

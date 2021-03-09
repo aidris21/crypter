@@ -28,6 +28,21 @@ class AuthService {
         );
     }
 
+    async signup(name, username, password, publicKey) {
+        if (await this.model.where({ username }, {}).findOne()) {
+            throw new ResponseError("User name is taken", 400);
+        }
+
+        const user = new this.model({
+            password: await bcrypt.hash(password, 5),
+            name,
+            username,
+            publicKey,
+        });
+
+        await user.save();
+    }
+
     validate(token) {
         try {
             return Promise.resolve(jwt.verify(token, VERY_PRIVATE_KEY));

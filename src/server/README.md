@@ -115,3 +115,31 @@ Examples:
     "username": "olha"
 }
 ```
+
+<hr>
+
+### Signup
+
+**POST http://localhost:3000/signup** - signup
+
+**Params:**
+
+-   `password` - **required** body param
+-   `username` - **required** body param
+-   `name` - **required** body param
+-   `publicKey` - **required** body param
+
+Examples:
+
+-   POST: http://localhost:3000/signup
+
+```json
+{
+    "password": "helloworld",
+    "username": "olha",
+    "name": "Olha",
+    "publicKey": [11, 23]
+}
+```
+
+**Note:** Response status _201_ when user was successfully created.
