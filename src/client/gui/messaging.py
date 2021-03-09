@@ -32,7 +32,13 @@ class Messaging:
         self.draw_messagebox()
         self.draw_messages()
         
+        self.Refresher()
         self.master.mainloop()
+
+    def Refresher(self):
+        self.frame.pack_forget()
+        self.draw_messages()
+        self.master.after(10000, self.Refresher)
 
     def draw_messages(self):
         self.frame = tk.Frame(self.master)
