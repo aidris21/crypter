@@ -43,12 +43,11 @@ class RSA:
         self.prime1 = get_n_bit_random()
         self.prime2 = get_n_bit_random()
 
-        # find public key
+        # public key
         self.pub_key = self.prime1 * self.prime2
+        self.enc_key = self.__enc_key_generation()
         # find num of co-prime numbers
         self.phi = (self.prime1 - 1) * (self.prime2 - 1)
-        # private encryption key
-        self.enc_key = self.__enc_key_generation()
         # private decryption key
         self.dec_key = self.__dec_key_generation()
 

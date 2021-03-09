@@ -47,12 +47,19 @@ def get_contacts(token = None):
 
     return get_return["users"]
 
-def get_messages(token, other_user):
+def get_messages(token, other_user, startFrom = None):
     endpoint = "http://localhost:3000/messages"
-    data = {
-        "accessToken": token,
-        "otherUser": other_user
-    }
+    if startFrom:
+        data = {
+            "accessToken": token,
+            "otherUser": other_user,
+            "startFrom": startFrom
+        }
+    else:
+        data = {
+            "accessToken": token,
+            "otherUser": other_user
+        }
 
     r = rq.get(endpoint, params=data)
     get_return = r.json()
