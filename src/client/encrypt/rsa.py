@@ -86,11 +86,13 @@ def encrypt(message, public_key):
         return str(encrypted_message) # return list of encrypted characters as string
 
 def decrypt(encrypted_message, decryption_key, public_key):
-        # TODO: Finish @Amir
-        #print(encrypted_message)
-        #print(self.dec_key)
+
+        # Convert encrypted_message back to list of ints
+        encrypted_message = encrypted_message.replace("[", "").replace("]", "").replace(" ", "")
+        encrypted_message = encrypted_message.split(",")
+        encrypted_message = list(map(int, encrypted_message))
+
         decryption_key = int(decryption_key)
-        #print(encrypted_message**self.dec_key)
         message = []
         for char in encrypted_message:
             decrypted_int = (mpz(char)**mpz(decryption_key))%mpz(public_key[1])
@@ -105,13 +107,12 @@ def decrypt(encrypted_message, decryption_key, public_key):
 
 if __name__ == "__main__":
     rsa = RSA()
-    print(RSA)
-    print('p1', rsa.prime1)
-    print('p2', rsa.prime2)
-    print('pub1', rsa.pub_key)
-    print('phi(N)', rsa.phi)
-    print('e', rsa.enc_key)
-    print('d', rsa.private_key)
+    print('prime1:', rsa.prime1)
+    print('prime2:', rsa.prime2)
+    print('N:', rsa.pub_key)
+    print('phi(N):', rsa.phi)
+    print('e:', rsa.enc_key)
+    print('private key:', rsa.private_key)
     print("--------------")
     message = input("Please type your message: ")
     print("Message: " + message)

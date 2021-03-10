@@ -176,10 +176,6 @@ class Messaging:
                 return content
 
     def decrypt_message(self, message):
-        # Convert message back to list of ints
-        encrypted_message = message.replace("[", "").replace("]", "").replace(" ", "")
-        encrypted_message = encrypted_message.split(",")
-        encrypted_message = list(map(int, encrypted_message))
         
         with open(self.private_key_path, 'r') as f:
                 lines = f.read().splitlines()
@@ -189,7 +185,7 @@ class Messaging:
                 private_key = int(lines[2].split(":")[1])
 
         print("Decrypting...")
-        decrypted_message = decrypt(encrypted_message, private_key, public_key)
+        decrypted_message = decrypt(message, private_key, public_key)
         print("Encrypted Message: " + message)
         print("Your public key: " + str(public_key))
         print("Your private key: " + str(private_key))
