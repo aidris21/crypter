@@ -43,12 +43,13 @@ class RSA:
         self.prime1 = get_n_bit_random()
         self.prime2 = get_n_bit_random()
 
+        # find num of co-prime numbers
+        self.phi = (self.prime1 - 1) * (self.prime2 - 1)
+
         # public key
         self.pub_key = self.prime1 * self.prime2
         self.enc_key = self.__enc_key_generation()
         self.public_key = (self.enc_key, self.pub_key)
-        # find num of co-prime numbers
-        self.phi = (self.prime1 - 1) * (self.prime2 - 1)
         # private decryption key
         self.private_key = self.__dec_key_generation()
 
@@ -79,19 +80,20 @@ def encrypt(message, public_key):
             tmp = char.encode('utf-8')
             int_char = int.from_bytes(tmp, 'little')
 
-            encrypted_message.append((mpz(int_char)**mpz(public_key[0]))%mpz(public_key[1]))
+            encrypted_char = int((mpz(int_char)**mpz(public_key[0]))%mpz(public_key[1]))
+            encrypted_message.append(encrypted_char)
 
-        return encrypted_message
+        return str(encrypted_message) # return list of encrypted characters as string
 
 def decrypt(encrypted_message, decryption_key, public_key):
         # TODO: Finish @Amir
         #print(encrypted_message)
         #print(self.dec_key)
-        self.dec_key = int(self.dec_key)
+        decryption_key = int(decryption_key)
         #print(encrypted_message**self.dec_key)
         message = []
         for char in encrypted_message:
-            decrypted_int = (char**mpz(decryption_key))%mpz(public_key[1])
+            decrypted_int = (mpz(char)**mpz(decryption_key))%mpz(public_key[1])
             decrypted_int = int(decrypted_int)
 
             decrypted_char = decrypted_int.to_bytes((decrypted_int.bit_length() + 7) // 8, 'little')
@@ -109,11 +111,11 @@ if __name__ == "__main__":
     print('pub1', rsa.pub_key)
     print('phi(N)', rsa.phi)
     print('e', rsa.enc_key)
-    print('d', rsa.dec_key)
+    print('d', rsa.private_key)
     print("--------------")
     message = input("Please type your message: ")
     print("Message: " + message)
-    encrypted_message = rsa.encrypt(message)
+    encrypted_message = encrypt(message, rsa.public_key)
     print("Encrypted Message: " + str(encrypted_message))
-    decrypted_message = rsa.decrypt(encrypted_message)
+    decrypted_message = decrypt(encrypted_message, rsa.private_key, rsa.public_key)
     print("Decrypted Message: " + decrypted_message)

@@ -48,9 +48,7 @@ def post_account(name, username, password, public_key):
     "publicKey": public_key
     }
     r = rq.post(url = endpoint, data=json.dumps(data), headers = headers)
-    post_return = r.json()
-
-    return post_return["status"]
+    return r
 
 
 def get_contacts(token = None):

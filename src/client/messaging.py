@@ -173,6 +173,10 @@ class Messaging:
                 return content
 
     def decrypt_message(self, message):
+        # Convert message back to list of ints
+        message = message.replace("[", "").replace("]", "").replace(" ", "")
+        message = message.split(",")
+        message = list(map(int, message))
         
         with open(self.private_key_path, 'r') as f:
                 lines = f.read().splitlines()
