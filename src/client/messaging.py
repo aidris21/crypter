@@ -99,7 +99,10 @@ class Messaging:
             f.write(content + "\n")
 
         # Encrypt message
+        print("Encrypting...")
         encrypted_message = encrypt(message, self.contact_key)
+        print("Contact's public key: " + str(self.contact_key))
+        print("Encrypted Message: " + encrypted_message)
 
         status = query.post_message(encrypted_message, self.token, to)
         print(status)
@@ -174,9 +177,9 @@ class Messaging:
 
     def decrypt_message(self, message):
         # Convert message back to list of ints
-        message = message.replace("[", "").replace("]", "").replace(" ", "")
-        message = message.split(",")
-        message = list(map(int, message))
+        encrypted_message = message.replace("[", "").replace("]", "").replace(" ", "")
+        encrypted_message = encrypted_message.split(",")
+        encrypted_message = list(map(int, encrypted_message))
         
         with open(self.private_key_path, 'r') as f:
                 lines = f.read().splitlines()
@@ -185,7 +188,12 @@ class Messaging:
                 public_key = (public_e, public_n)
                 private_key = int(lines[2].split(":")[1])
 
-        decrypted_message = decrypt(message, private_key, public_key)
+        print("Decrypting...")
+        decrypted_message = decrypt(encrypted_message, private_key, public_key)
+        print("Encrypted Message: " + message)
+        print("Your public key: " + str(public_key))
+        print("Your private key: " + str(private_key))
+        print("Decrypted Message: " + decrypted_message)
 
         return decrypted_message
 
