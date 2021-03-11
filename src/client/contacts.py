@@ -3,6 +3,7 @@
     # structure credit: https://stackoverflow.com/questions/17466561/best-way-to-structure-a-tkinter-application
 
 import tkinter as tk
+
 from messaging import Messaging
 import query
 
