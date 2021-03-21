@@ -42,7 +42,7 @@ class Messaging:
             for directory in subdirs:
                 if "private_key" in directory:
                     found = os.path.join(path, directory)
-        self.private_key_path = found + "/" + "key.txt"
+        self.private_key_path = found + "/" + "key_file.txt"
 
         self.draw_messagebox()
         self.draw_messages()

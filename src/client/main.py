@@ -172,7 +172,7 @@ class createAccount:
         with open(key_file_path, 'x') as f:
             f.write("public e:" + str(public_key[0]) + "\n") # public e
             f.write("public n:" + str(public_key[1]) + "\n") # public n
-            f.write("private key:" + str(new_keys.private_key) + "\n") # private key
+            f.write("private key:" + str(int(new_keys.private_key)) + "\n") # private key
             f.write("prime 1:" + str(new_keys.prime1) + "\n") # first prime number
             f.write("prime 2:" + str(new_keys.prime2) + "\n") # second prime number
             f.write("phi:" + str(new_keys.phi) + "\n") # Phi
