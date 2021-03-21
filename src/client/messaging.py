@@ -17,7 +17,8 @@ class Messaging:
     def __init__(self, master, token, contact = None):
         # Frames
         self.master = master
-        self.side_frame = None
+        self.sidetop_frame = None
+        self.sidebot_frame = None
 
         # Class attributes
         self.token = token
@@ -46,13 +47,12 @@ class Messaging:
         self.draw_messagebox()
         self.draw_messages()
         
-        self.Refresher()
+
         self.master.mainloop()
 
-    def Refresher(self):
+    def Refresher(self, event):
         self.top_frame.pack_forget()
         self.draw_messages()
-        self.master.after(10000, self.Refresher)
 
     def draw_messages(self):
         self.top_frame = tk.Frame(self.master, width=300, height=400)
@@ -93,7 +93,12 @@ class Messaging:
         self.message_text = tk.StringVar()
         self.message_entry = tk.Entry(self.bottom_frame, textvariable = self.message_text, width=self.width)
         self.message_entry.bind("<KeyPress-Return>", self.send_message)
-        self.message_entry.pack(side=tk.LEFT, fill=tk.BOTH)
+        self.message_entry.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        # Refresh button
+        self.refreshButton = tk.Button(self.bottom_frame, text = 'Refresh', width = 10)
+        self.refreshButton.bind("<Button-1>", self.Refresher)
+        self.refreshButton.pack(side=tk.LEFT)
 
         # Send button
         self.selectButton = tk.Button(self.bottom_frame, text = 'Send', width = 10)
@@ -120,29 +125,29 @@ class Messaging:
 
     # Encrypt message, draw relevant info on screen
     def draw_encrypt(self, message):
-        if self.side_frame:
-            self.side_frame.pack_forget()
+        if self.sidetop_frame:
+            self.sidetop_frame.pack_forget()
 
-        self.side_frame = tk.Frame(self.master, width = 200, height= 40)
-        self.side_frame.pack(side=tk.RIGHT, fill=tk.BOTH)
+        self.sidetop_frame = tk.Frame(self.master, width = 200, height= 40)
+        self.sidetop_frame.pack(side=tk.RIGHT, fill=tk.BOTH)
 
         # Original Message
         message_string = "Original Message: " + message + "\n" + "-----------"
-        message_label = tk.Label(self.side_frame, text=message_string)
+        message_label = tk.Label(self.sidetop_frame, text=message_string)
         message_label.pack(side=tk.TOP)
 
         # Public Key
         pubkey_string = "Contact's public key: " + str(self.contact_key) + "\n" + "-----------"
-        pubkey_label = tk.Label(self.side_frame, text=pubkey_string)
+        pubkey_label = tk.Label(self.sidetop_frame, text=pubkey_string)
         pubkey_label.pack(side=tk.TOP)
 
         # Equation
-        equation_string = "(char^pubkey[1])mod(pubkey^2)" + "\n" + "-----------"
-        equation_label = tk.Label(self.side_frame, text=equation_string)
+        equation_string = "Equation: " + "(char^pubkey[1])mod(pubkey^2)" + "\n" + "-----------"
+        equation_label = tk.Label(self.sidetop_frame, text=equation_string)
         equation_label.pack(side=tk.TOP)
 
         # Encrypting...
-        encrypting_label = tk.Label(self.side_frame, text="Encrypting...")
+        encrypting_label = tk.Label(self.sidetop_frame, text="Encrypting...")
         encrypting_label.pack(side=tk.TOP)
 
         # Encrypted Message
@@ -159,21 +164,21 @@ class Messaging:
         encrypted_string = "".join(char for char in encrypted_string)
 
         encrypted_string = "Encrypted Message: " + encrypted_string
-        encrypted_label = tk.Label(self.side_frame, text=encrypted_string)
+        encrypted_label = tk.Label(self.sidetop_frame, text=encrypted_string)
         encrypted_label.pack(side=tk.TOP)
         self.master.update()
 
         # Clear button
-        self.clearButton = tk.Button(self.side_frame, text = 'Clear', width = 10)
-        self.clearButton.bind("<Button-1>", self.clear)
+        self.clearButton = tk.Button(self.sidetop_frame, text = 'Clear', width = 10)
+        self.clearButton.bind("<Button-1>", self.clear_encrypt)
         self.clearButton.pack(side=tk.TOP)
         self.master.update()
 
         return encrypted_message
 
     # Clear Encryption info
-    def clear(self, event):
-        self.side_frame.pack_forget()
+    def clear_encrypt(self, event):
+        self.sidetop_frame.pack_forget()
 
 
     # Need to deal with timezones later
@@ -234,20 +239,89 @@ class Messaging:
                 unix_time = time.mktime(datetime_obj.timetuple())
 
                 # Decrypt
-                decrypted_message = self.decrypt_message(message["text"])
+                decrypted_message = self.draw_decrypt(message["text"])
 
                 content = str(timestamp) + "," + str(user_from) + "," + decrypted_message
 
                 return content
 
+    def draw_decrypt(self, message):
+        if self.sidebot_frame:
+            self.sidebot_frame.pack_forget()
+
+        self.sidebot_frame = tk.Frame(self.master, width = 200, height= 40)
+        self.sidebot_frame.pack(side=tk.BOTTOM, fill=tk.BOTH)
+
+        # Get decryption attributes
+        with open(self.private_key_path, 'r') as f:
+            lines = f.read().splitlines()
+            public_e = int(lines[0].split(":")[1])
+            public_n = int(lines[1].split(":")[1])
+            public_key = (public_e, public_n)
+            private_key = int(lines[2].split(":")[1])
+
+        # Encrypted Message
+        # Format string
+        encrypted_string = list(message)
+        j = 0
+        for i in range(0,len(encrypted_string)):
+            if j >= 30 and encrypted_string[i]==",":
+                j = 0
+                encrypted_string[i] = encrypted_string[i] + "\n"
+            j += 1
+        encrypted_string = "".join(char for char in encrypted_string)
+
+        encrypted_string = "Encrypted Message: " + encrypted_string + "\n" + "-----------"
+        encrypted_label = tk.Label(self.sidebot_frame, text=encrypted_string)
+        encrypted_label.pack(side=tk.TOP)
+
+        # Public Key
+        pubkey_string = "Your public key: " + str(public_key) + "\n" + "-----------"
+        pubkey_label = tk.Label(self.sidebot_frame, text=pubkey_string)
+        pubkey_label.pack(side=tk.TOP)
+
+        # Private Key
+        privkey_string = "Your private key: " + str(private_key) + "\n" + "-----------"
+        privkey_label = tk.Label(self.sidebot_frame, text=privkey_string)
+        privkey_label.pack(side=tk.TOP)
+
+        # Equation
+        equation_string = "(char^privkey)mod(pubkey[2])" + "\n" + "-----------"
+        equation_label = tk.Label(self.sidebot_frame, text=equation_string)
+        equation_label.pack(side=tk.TOP)
+
+        # Decrypting...
+        encrypting_label = tk.Label(self.sidebot_frame, text="Decrypting...")
+        encrypting_label.pack(side=tk.TOP)
+
+        # Decrypted Message
+        decrypted_message = decrypt(message, private_key, public_key)
+
+        decrypted_string = "Decrypted Message: " + decrypted_message
+        decrypted_label = tk.Label(self.sidebot_frame, text=decrypted_string)
+        decrypted_label.pack(side=tk.TOP)
+        self.master.update()
+
+        # Clear button
+        self.clearButton = tk.Button(self.sidebot_frame, text = 'Clear', width = 10)
+        self.clearButton.bind("<Button-1>", self.clear_decrypt)
+        self.clearButton.pack(side=tk.TOP)
+        self.master.update()
+
+        return decrypted_message
+
+    # Clear Decryption info
+    def clear_decrypt(self, event):
+        self.sidebot_frame.pack_forget()
+
     def decrypt_message(self, message):
         
         with open(self.private_key_path, 'r') as f:
-                lines = f.read().splitlines()
-                public_e = int(lines[0].split(":")[1])
-                public_n = int(lines[1].split(":")[1])
-                public_key = (public_e, public_n)
-                private_key = int(lines[2].split(":")[1])
+            lines = f.read().splitlines()
+            public_e = int(lines[0].split(":")[1])
+            public_n = int(lines[1].split(":")[1])
+            public_key = (public_e, public_n)
+            private_key = int(lines[2].split(":")[1])
 
         print("Decrypting...")
         decrypted_message = decrypt(message, private_key, public_key)
