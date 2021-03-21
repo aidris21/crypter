@@ -241,7 +241,7 @@ class Messaging:
                 # Decrypt
                 decrypted_message = self.draw_decrypt(message["text"])
 
-                content = str(timestamp) + "," + str(user_from) + "," + decrypted_message
+                content = str(unix_time) + "," + str(user_from) + "," + decrypted_message
 
                 return content
 
