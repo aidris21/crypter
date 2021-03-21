@@ -16,6 +16,8 @@ from encrypt.rsa import encrypt, decrypt, RSA
 class Messaging:
     def __init__(self, master, token, contact = None):
         self.master = master
+        self.bottom_frame = tk.Frame(self.master, width = 70, height= 40)
+        self.bottom_frame.pack(side=tk.BOTTOM, fill=tk.X)
         self.token = token
         self.width = 50
         self.contact = contact
@@ -46,16 +48,16 @@ class Messaging:
         self.master.mainloop()
 
     def Refresher(self):
-        self.frame.pack_forget()
+        self.top_frame.pack_forget()
         self.draw_messages()
         self.master.after(10000, self.Refresher)
 
     def draw_messages(self):
-        self.frame = tk.Frame(self.master)
-        self.frame.pack(fill=tk.X)
+        self.top_frame = tk.Frame(self.master)
+        self.top_frame.pack(side=tk.TOP, fill=tk.BOTH)
         self.get_messages() # Update Message File
 
-        self.listbox = tk.Listbox(self.frame, selectmode=tk.SINGLE, width=self.width)
+        self.listbox = tk.Listbox(self.top_frame, selectmode=tk.SINGLE, width=self.width)
         self.listbox.pack(side = tk.LEFT, fill = tk.BOTH) 
         
         i = 0
@@ -72,8 +74,8 @@ class Messaging:
                     i += 1
 
         # Scroll Bar
-        scrollbar = tk.Scrollbar(self.frame)
-        scrollbar.pack(side = tk.RIGHT, fill = tk.BOTH) 
+        scrollbar = tk.Scrollbar(self.top_frame)
+        scrollbar.pack(side = tk.LEFT, fill = tk.BOTH) 
 
         self.listbox.config(yscrollcommand = scrollbar.set) 
 
@@ -82,12 +84,12 @@ class Messaging:
     def draw_messagebox(self):
         # Message box
         self.message_text = tk.StringVar()
-        self.message_entry = tk.Entry(self.master, textvariable = self.message_text, width=self.width)
-        self.message_entry.pack(side=tk.BOTTOM)
+        self.message_entry = tk.Entry(self.bottom_frame, textvariable = self.message_text, width=self.width)
+        self.message_entry.pack(side=tk.LEFT, fill=tk.BOTH)
 
         # Send button
-        self.selectButton = tk.Button(text = 'Send', width = 20, command = self.send_message)
-        self.selectButton.pack(side=tk.RIGHT)
+        self.selectButton = tk.Button(self.bottom_frame, text = 'Send', width = 10, command = self.send_message)
+        self.selectButton.pack(side=tk.LEFT)
 
     def send_message(self):
         message=self.message_text.get()
@@ -108,7 +110,7 @@ class Messaging:
         print(status)
 
         self.message_text.set("")
-        self.frame.pack_forget()
+        self.top_frame.pack_forget()
         self.draw_messages()
 
     # Need to deal with timezones later

@@ -4,9 +4,10 @@
 import requests as rq
 import json
 
+ENDPOINT = "https://crypter.ue.r.appspot.com/"
 
 def login(username, password):
-    endpoint = "http://localhost:3000/login"
+    endpoint = ENDPOINT + "login"
     headers = {'Content-type': 'application/json'}
     data = {
         "username": username,
@@ -22,7 +23,7 @@ def login(username, password):
     return token
 
 def post_message(message, token, user_to = "6039a891cfcf715977b2365c"):
-    endpoint = "http://localhost:3000/messages"
+    endpoint = ENDPOINT + "messages"
     headers = {'Content-type': 'application/json'}
     data = {
         "message": {
@@ -39,7 +40,7 @@ def post_message(message, token, user_to = "6039a891cfcf715977b2365c"):
     return post_return["status"]
 
 def post_account(name, username, password, public_key):
-    endpoint = "http://localhost:3000/signup"
+    endpoint = ENDPOINT + "signup"
     headers = {'Content-type': 'application/json'}
     data = {
     "password": password,
@@ -52,7 +53,7 @@ def post_account(name, username, password, public_key):
 
 
 def get_contacts(token = None):
-    API_ENDPOINT = "http://localhost:3000/users"
+    API_ENDPOINT = ENDPOINT + "users"
 
     r = rq.get(API_ENDPOINT)
 
@@ -61,7 +62,7 @@ def get_contacts(token = None):
     return get_return["users"]
 
 def get_messages(token, other_user, startFrom = None):
-    endpoint = "http://localhost:3000/messages"
+    endpoint = ENDPOINT + "messages"
     if startFrom:
         data = {
             "accessToken": token,
@@ -84,7 +85,7 @@ def get_messages(token, other_user, startFrom = None):
 """----------------------------------------"""
 
 def get_users():
-    API_ENDPOINT = "http://localhost:3000/users"
+    API_ENDPOINT = ENDPOINT + "users"
 
     r = rq.get(API_ENDPOINT)
 
@@ -93,7 +94,7 @@ def get_users():
     return foo
 
 def login_amir():
-    endpoint = "http://localhost:3000/login"
+    endpoint = ENDPOINT + "login"
     headers = {'Content-type': 'application/json'}
     data = {
         "username": "amir",
@@ -108,7 +109,6 @@ def login_amir():
 
 
 if __name__ == "__main__":
-    #post_message(message = "Hello Hello")
 
     token = login_amir()["accessToken"]
     print(token)
@@ -116,7 +116,7 @@ if __name__ == "__main__":
     message_send = post_message("hey there", token)
     print(message_send)
 
-    endpoint = "http://localhost:3000/messages"
+    endpoint = ENDPOINT + "messages"
     data = {
         "accessToken": token,
         "otherUser": "6039a891cfcf715977b2365c"
