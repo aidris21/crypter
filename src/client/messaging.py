@@ -15,9 +15,11 @@ from encrypt.rsa import encrypt, decrypt, RSA
 
 class Messaging:
     def __init__(self, master, token, contact = None):
+        # Frames
         self.master = master
-        self.bottom_frame = tk.Frame(self.master, width = 70, height= 40)
-        self.bottom_frame.pack(side=tk.BOTTOM, fill=tk.X)
+        self.side_frame = None
+
+        # Class attributes
         self.token = token
         self.width = 50
         self.contact = contact
@@ -53,8 +55,10 @@ class Messaging:
         self.master.after(10000, self.Refresher)
 
     def draw_messages(self):
-        self.top_frame = tk.Frame(self.master)
+        self.top_frame = tk.Frame(self.master, width=300, height=400)
+        #self.top_frame.pack_propagate(False)
         self.top_frame.pack(side=tk.TOP, fill=tk.BOTH)
+
         self.get_messages() # Update Message File
 
         self.listbox = tk.Listbox(self.top_frame, selectmode=tk.SINGLE, width=self.width)
@@ -82,36 +86,95 @@ class Messaging:
 
 
     def draw_messagebox(self):
+        self.bottom_frame = tk.Frame(self.master, width = 70, height= 40)
+        self.bottom_frame.pack(side=tk.BOTTOM, fill=tk.X)
+
         # Message box
         self.message_text = tk.StringVar()
         self.message_entry = tk.Entry(self.bottom_frame, textvariable = self.message_text, width=self.width)
+        self.message_entry.bind("<KeyPress-Return>", self.send_message)
         self.message_entry.pack(side=tk.LEFT, fill=tk.BOTH)
 
         # Send button
-        self.selectButton = tk.Button(self.bottom_frame, text = 'Send', width = 10, command = self.send_message)
+        self.selectButton = tk.Button(self.bottom_frame, text = 'Send', width = 10)
+        self.selectButton.bind("<Button-1>", self.send_message)
         self.selectButton.pack(side=tk.LEFT)
 
-    def send_message(self):
+    def send_message(self, event):
         message=self.message_text.get()
-        to = self.contact["_id"]
-        #timestamp = datetime.datetime.now(pytz.utc)
-        timestamp = int(time.time()*1000) # Unix time in milliseconds
-        content = str(timestamp) + "," + "You" + "," + message
-        with open(self.conversation_path, 'a') as f:
-            f.write(content + "\n")
+        if message != "":
+            to = self.contact["_id"]
+            #timestamp = datetime.datetime.now(pytz.utc)
+            timestamp = int(time.time()*1000) # Unix time in milliseconds
+            content = str(timestamp) + "," + "You" + "," + message
+            with open(self.conversation_path, 'a') as f:
+                f.write(content + "\n")
 
-        # Encrypt message
-        print("Encrypting...")
+            encrypted_message = self.draw_encrypt(message)
+            status = query.post_message(encrypted_message, self.token, to)
+            print(status)
+
+            self.message_text.set("")
+            self.top_frame.pack_forget()
+            self.draw_messages()
+
+    # Encrypt message, draw relevant info on screen
+    def draw_encrypt(self, message):
+        if self.side_frame:
+            self.side_frame.pack_forget()
+
+        self.side_frame = tk.Frame(self.master, width = 200, height= 40)
+        self.side_frame.pack(side=tk.RIGHT, fill=tk.BOTH)
+
+        # Original Message
+        message_string = "Original Message: " + message + "\n" + "-----------"
+        message_label = tk.Label(self.side_frame, text=message_string)
+        message_label.pack(side=tk.TOP)
+
+        # Public Key
+        pubkey_string = "Contact's public key: " + str(self.contact_key) + "\n" + "-----------"
+        pubkey_label = tk.Label(self.side_frame, text=pubkey_string)
+        pubkey_label.pack(side=tk.TOP)
+
+        # Equation
+        equation_string = "(char^pubkey[1])mod(pubkey^2)" + "\n" + "-----------"
+        equation_label = tk.Label(self.side_frame, text=equation_string)
+        equation_label.pack(side=tk.TOP)
+
+        # Encrypting...
+        encrypting_label = tk.Label(self.side_frame, text="Encrypting...")
+        encrypting_label.pack(side=tk.TOP)
+
+        # Encrypted Message
         encrypted_message = encrypt(message, self.contact_key)
-        print("Contact's public key: " + str(self.contact_key))
-        print("Encrypted Message: " + encrypted_message)
 
-        status = query.post_message(encrypted_message, self.token, to)
-        print(status)
+        # Format string
+        encrypted_string = list(encrypted_message)
+        j = 0
+        for i in range(0,len(encrypted_string)):
+            if j >= 30 and encrypted_string[i]==",":
+                j = 0
+                encrypted_string[i] = encrypted_string[i] + "\n"
+            j += 1
+        encrypted_string = "".join(char for char in encrypted_string)
 
-        self.message_text.set("")
-        self.top_frame.pack_forget()
-        self.draw_messages()
+        encrypted_string = "Encrypted Message: " + encrypted_string
+        encrypted_label = tk.Label(self.side_frame, text=encrypted_string)
+        encrypted_label.pack(side=tk.TOP)
+        self.master.update()
+
+        # Clear button
+        self.clearButton = tk.Button(self.side_frame, text = 'Clear', width = 10)
+        self.clearButton.bind("<Button-1>", self.clear)
+        self.clearButton.pack(side=tk.TOP)
+        self.master.update()
+
+        return encrypted_message
+
+    # Clear Encryption info
+    def clear(self, event):
+        self.side_frame.pack_forget()
+
 
     # Need to deal with timezones later
     # Get messages sent after last message stored in conversation
