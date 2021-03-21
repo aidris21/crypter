@@ -236,7 +236,7 @@ class Messaging:
                 timestamp = timestamp.replace('T', '')
                 timestamp = timestamp.replace('Z', '')
                 datetime_obj = datetime.datetime.strptime(timestamp, '%Y-%m-%d%H:%M:%S.%f')
-                unix_time = time.mktime(datetime_obj.timetuple())
+                unix_time = int(time.mktime(datetime_obj.timetuple()))
 
                 # Decrypt
                 decrypted_message = self.draw_decrypt(message["text"])
