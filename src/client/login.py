@@ -10,7 +10,7 @@ from contacts import Contacts
 import query
 from encrypt.rsa import RSA
 
-class Main:
+class Login:
     def __init__(self, master):
         self.width = 600
         self.height = 400

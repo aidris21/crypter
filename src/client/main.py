@@ -6,7 +6,7 @@ import tkinter as tk
 import os
 import shutil
 
-from login import Main
+from login import Login
 from contacts import Contacts
 from messaging import Messaging
 
@@ -26,7 +26,7 @@ def message_window(window_name, token, contact):
 
 def main(): 
     root = tk.Tk(className="crypter")
-    app = Main(root)
+    app = Login(root)
     if app.next:
         contact_window(app.window_name, app.token)
 
