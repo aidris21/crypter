@@ -10,6 +10,7 @@ import query
 class Contacts:
     def __init__(self, master, token):
         self.master = master
+        self.next = None
         self.token = token
         self.frame = tk.Frame(self.master)
         self.width = 50
@@ -49,8 +50,11 @@ class Contacts:
         selected_contact_name = selected_contact["name"]
 
         self.master.destroy()
-        root = tk.Tk(className=selected_contact_name)
-        app = Messaging(root, self.token, selected_contact)
+        self.next = "forward"
+        self.window_name = selected_contact_name
+        self.contact = selected_contact
+        #root = tk.Tk(className=selected_contact_name)
+        #app = Messaging(root, self.token, selected_contact)
 
 if __name__ == "__main__":
     pass

@@ -3,6 +3,7 @@
     # structure credit: https://stackoverflow.com/questions/17466561/best-way-to-structure-a-tkinter-application
 
 import tkinter as tk
+from tkinter import font
 import heapq as hq
 import time
 import datetime
@@ -17,6 +18,7 @@ class Messaging:
     def __init__(self, master, token, contact = None):
         # Frames
         self.master = master
+        self.next = None
         self.sidetop_frame = None
         self.sidebot_frame = None
 
@@ -51,18 +53,20 @@ class Messaging:
         self.master.mainloop()
 
     def Refresher(self, event):
-        self.top_frame.pack_forget()
+        self.top_frame.grid_forget()
         self.draw_messages()
 
     def draw_messages(self):
         self.top_frame = tk.Frame(self.master, width=300, height=400)
         #self.top_frame.pack_propagate(False)
-        self.top_frame.pack(side=tk.TOP, fill=tk.BOTH)
+        self.top_frame.grid(row=0, column = 0, columnspan = 2)
 
         self.get_messages() # Update Message File
 
         self.listbox = tk.Listbox(self.top_frame, selectmode=tk.SINGLE, width=self.width)
-        self.listbox.pack(side = tk.LEFT, fill = tk.BOTH) 
+        helv14 = font.Font(family="Helvetica",size=14)
+        self.listbox.config(font=helv14)
+        self.listbox.grid(row=0, column = 0) 
         
         i = 0
         with open(self.conversation_path, 'r') as f:
@@ -71,39 +75,49 @@ class Messaging:
                     line = line.split(",")
                     if line[1] == "You":
                         self.listbox.insert(tk.END, "You: " + line[2]) 
-                        self.listbox.itemconfig(i, {'bg':'green'})
+                        self.listbox.itemconfig(i, {'bg':'#c1c1d7'})
                     else:
                         self.listbox.insert(tk.END, self.contact_name + ": " + line[2]) 
-                        self.listbox.itemconfig(i, {'bg':'blue'})
+                        self.listbox.itemconfig(i, {'bg':'#ffffff'})
                     i += 1
 
         # Scroll Bar
         scrollbar = tk.Scrollbar(self.top_frame)
-        scrollbar.pack(side = tk.LEFT, fill = tk.BOTH) 
+        scrollbar.grid(row=0, column = 1) 
 
         self.listbox.config(yscrollcommand = scrollbar.set) 
 
 
 
     def draw_messagebox(self):
-        self.bottom_frame = tk.Frame(self.master, width = 70, height= 40)
-        self.bottom_frame.pack(side=tk.BOTTOM, fill=tk.X)
+        self.bottom_frame = tk.Frame(self.master, width = 90, height= 80)
+        self.bottom_frame.grid(row=1, column = 0, columnspan = 4)
 
         # Message box
         self.message_text = tk.StringVar()
         self.message_entry = tk.Entry(self.bottom_frame, textvariable = self.message_text, width=self.width)
         self.message_entry.bind("<KeyPress-Return>", self.send_message)
-        self.message_entry.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.message_entry.grid(row=1, column = 0)
 
         # Refresh button
-        self.refreshButton = tk.Button(self.bottom_frame, text = 'Refresh', width = 10)
+        self.refreshButton = tk.Button(self.bottom_frame, text = 'Refresh', width = 5)
         self.refreshButton.bind("<Button-1>", self.Refresher)
-        self.refreshButton.pack(side=tk.LEFT)
+        self.refreshButton.grid(row=1, column = 1)
 
         # Send button
-        self.selectButton = tk.Button(self.bottom_frame, text = 'Send', width = 10)
-        self.selectButton.bind("<Button-1>", self.send_message)
-        self.selectButton.pack(side=tk.LEFT)
+        self.sendButton = tk.Button(self.bottom_frame, text = 'Send', width = 5)
+        self.sendButton.bind("<Button-1>", self.send_message)
+        self.sendButton.grid(row=1, column = 2)
+
+        # Back Button
+        self.backButton = tk.Button(self.bottom_frame, text = 'Back', width = 10)
+        self.backButton.bind("<Button-1>", self.back)
+        self.backButton.grid(row=1, column = 3)
+
+    def back(self, event=None):
+        self.master.destroy()
+        self.next = "backward"
+        self.window_name = "crypter"
 
     def send_message(self, event):
         message=self.message_text.get()
@@ -120,35 +134,38 @@ class Messaging:
             print(status)
 
             self.message_text.set("")
-            self.top_frame.pack_forget()
+            self.top_frame.grid_forget()
             self.draw_messages()
 
     # Encrypt message, draw relevant info on screen
     def draw_encrypt(self, message):
         if self.sidetop_frame:
-            self.sidetop_frame.pack_forget()
+            self.clear_encrypt()
 
-        self.sidetop_frame = tk.Frame(self.master, width = 200, height= 40)
-        self.sidetop_frame.pack(side=tk.RIGHT, fill=tk.BOTH)
+        self.sidetop_frame = tk.Frame(self.master, width = 200, height= 400)
+        self.sidetop_frame.grid(row=0, column = 2)
 
         # Original Message
         message_string = "Original Message: " + message + "\n" + "-----------"
         message_label = tk.Label(self.sidetop_frame, text=message_string)
-        message_label.pack(side=tk.TOP)
+        message_label.grid(row=1, column = 2)
 
         # Public Key
         pubkey_string = "Contact's public key: " + str(self.contact_key) + "\n" + "-----------"
         pubkey_label = tk.Label(self.sidetop_frame, text=pubkey_string)
-        pubkey_label.pack(side=tk.TOP)
+        pubkey_label.grid(row=2, column = 2)
+        self.master.update()
 
         # Equation
         equation_string = "Equation: " + "(char^pubkey[1])mod(pubkey^2)" + "\n" + "-----------"
         equation_label = tk.Label(self.sidetop_frame, text=equation_string)
-        equation_label.pack(side=tk.TOP)
+        equation_label.grid(row=3, column = 2)
+        self.master.update()
 
         # Encrypting...
         encrypting_label = tk.Label(self.sidetop_frame, text="Encrypting...")
-        encrypting_label.pack(side=tk.TOP)
+        encrypting_label.grid(row=4, column = 2)
+        self.master.update()
 
         # Encrypted Message
         encrypted_message = encrypt(message, self.contact_key)
@@ -165,20 +182,20 @@ class Messaging:
 
         encrypted_string = "Encrypted Message: " + encrypted_string
         encrypted_label = tk.Label(self.sidetop_frame, text=encrypted_string)
-        encrypted_label.pack(side=tk.TOP)
+        encrypted_label.grid(row=5, column = 2)
         self.master.update()
 
         # Clear button
         self.clearButton = tk.Button(self.sidetop_frame, text = 'Clear', width = 10)
         self.clearButton.bind("<Button-1>", self.clear_encrypt)
-        self.clearButton.pack(side=tk.TOP)
+        self.clearButton.grid(row=6, column = 2)
         self.master.update()
 
         return encrypted_message
 
     # Clear Encryption info
-    def clear_encrypt(self, event):
-        self.sidetop_frame.pack_forget()
+    def clear_encrypt(self, event=None):
+        self.sidetop_frame.grid_forget()
 
 
     # Need to deal with timezones later
@@ -247,10 +264,10 @@ class Messaging:
 
     def draw_decrypt(self, message):
         if self.sidebot_frame:
-            self.sidebot_frame.pack_forget()
+            self.clear_decrypt()
 
         self.sidebot_frame = tk.Frame(self.master, width = 200, height= 40)
-        self.sidebot_frame.pack(side=tk.BOTTOM, fill=tk.BOTH)
+        self.sidebot_frame.grid(row=0, column = 3)
 
         # Get decryption attributes
         with open(self.private_key_path, 'r') as f:
@@ -273,46 +290,46 @@ class Messaging:
 
         encrypted_string = "Encrypted Message: " + encrypted_string + "\n" + "-----------"
         encrypted_label = tk.Label(self.sidebot_frame, text=encrypted_string)
-        encrypted_label.pack(side=tk.TOP)
+        encrypted_label.grid(row=1, column = 3)
 
         # Public Key
         pubkey_string = "Your public key: " + str(public_key) + "\n" + "-----------"
         pubkey_label = tk.Label(self.sidebot_frame, text=pubkey_string)
-        pubkey_label.pack(side=tk.TOP)
+        pubkey_label.grid(row=2, column = 3)
 
         # Private Key
         privkey_string = "Your private key: " + str(private_key) + "\n" + "-----------"
         privkey_label = tk.Label(self.sidebot_frame, text=privkey_string)
-        privkey_label.pack(side=tk.TOP)
+        privkey_label.grid(row=3, column = 3)
 
         # Equation
         equation_string = "(char^privkey)mod(pubkey[2])" + "\n" + "-----------"
         equation_label = tk.Label(self.sidebot_frame, text=equation_string)
-        equation_label.pack(side=tk.TOP)
+        equation_label.grid(row=4, column = 3)
 
         # Decrypting...
         encrypting_label = tk.Label(self.sidebot_frame, text="Decrypting...")
-        encrypting_label.pack(side=tk.TOP)
+        encrypting_label.grid(row=5, column = 3)
 
         # Decrypted Message
         decrypted_message = decrypt(message, private_key, public_key)
 
         decrypted_string = "Decrypted Message: " + decrypted_message
         decrypted_label = tk.Label(self.sidebot_frame, text=decrypted_string)
-        decrypted_label.pack(side=tk.TOP)
+        decrypted_label.grid(row=6, column = 3)
         self.master.update()
 
         # Clear button
         self.clearButton = tk.Button(self.sidebot_frame, text = 'Clear', width = 10)
         self.clearButton.bind("<Button-1>", self.clear_decrypt)
-        self.clearButton.pack(side=tk.TOP)
+        self.clearButton.grid(row=7, column = 3)
         self.master.update()
 
         return decrypted_message
 
     # Clear Decryption info
-    def clear_decrypt(self, event):
-        self.sidebot_frame.pack_forget()
+    def clear_decrypt(self, event=None):
+        self.sidebot_frame.grid_forget()
 
     def decrypt_message(self, message):
         
