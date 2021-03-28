@@ -7,7 +7,7 @@ from tkinter import font
 import heapq as hq
 import time
 import datetime
-import pytz
+#import pytz
 import os
 import pathlib
 
@@ -204,6 +204,7 @@ class Messaging:
         
         if not os.path.isfile(self.conversation_path):
             self.create_conversation()
+            return
         elif os.stat(self.conversation_path).st_size > 0:
             with open(self.conversation_path, 'r') as f:
                 lines = f.read().splitlines()
@@ -211,23 +212,19 @@ class Messaging:
                 last_timestamp = int(last_line[0])
             
             new_messages = query.get_messages(self.token, self.contact_id, last_timestamp)
-
-            f = open(self.conversation_path, "a")
-            for message in new_messages:
-                if message["from"] == self.contact_id:
-                    content = self.compile_message(message)
-                    f.write(content + "\n")
-            f.close()
         else:
             new_messages = query.get_messages(self.token, self.contact_id)
 
-            f = open(self.conversation_path, "a")
-            for message in new_messages:
-                if message["from"] == self.contact_id:
+        f = open(self.conversation_path, "a")
+        for i in range(0, len(new_messages)):
+            message = new_messages[i]
+            if message["from"] == self.contact_id:
+                if i == len(new_messages) - 1:
+                    content = self.compile_message(message, draw=True)
+                else:
                     content = self.compile_message(message)
-                    f.write(content + "\n")
-            f.close()
-
+                f.write(content + "\n")
+        f.close()
     
     def create_conversation(self):
         path = self.conversation_path
@@ -235,15 +232,19 @@ class Messaging:
 
         messages = query.get_messages(self.token, self.contact_id)
 
-        for message in messages:
+        for i in range(0, len(messages)):
+            message = messages[i]
             if message["from"] == self.contact_id:
-                content = self.compile_message(message)
+                if i == len(new_messages) - 1:
+                    content = self.compile_message(message, draw=True)
+                else:
+                    content = self.compile_message(message)
                 f.write(content + "\n")
         
         f.close()
 
     # Decrypt incoming messages and compile content
-    def compile_message(self, message):
+    def compile_message(self, message, draw = False):
             user_from = message["from"]
             if user_from == self.contact_id:
                 user_from = self.contact_name
@@ -256,7 +257,10 @@ class Messaging:
                 unix_time = int(time.mktime(datetime_obj.timetuple()))
 
                 # Decrypt
-                decrypted_message = self.draw_decrypt(message["text"])
+                if draw:
+                    decrypted_message = self.draw_decrypt(message["text"])
+                else:
+                    decrypted_message = self.decrypt_message(message["text"])
 
                 content = str(unix_time) + "," + str(user_from) + "," + decrypted_message
 
@@ -361,6 +365,6 @@ if __name__ == "__main__":
     print(foo.date())
     print(foo.time())
     print(time.mktime(foo.timetuple()))
-    print(datetime.datetime.now(pytz.utc))
+    #print(datetime.datetime.now(pytz.utc))
     print(time.time()*1000)
     print(os.getcwd())

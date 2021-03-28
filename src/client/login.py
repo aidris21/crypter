@@ -3,6 +3,7 @@
     # structure credit: https://stackoverflow.com/questions/17466561/best-way-to-structure-a-tkinter-application
 
 import tkinter as tk
+#from PIL import Image, ImageTk
 import os
 import shutil
 
@@ -16,8 +17,13 @@ class Login:
         self.height = 400
         self.master = master
         self.next = False
-        #self.bottomframe = tk.Frame(self.master)
-        #self.bottomframe.grid(row=4)
+
+        #image_path = "./doc/crypter.png"
+        #background_image = Image.open(image_path)
+        #background_image = ImageTk.PhotoImage(background_image)
+        #background_image=tk.PhotoImage(file = image_path)
+        #background_label = tk.Label(self.master, image=background_image)
+        #background_label.place(x=0, y=0, relwidth=1, relheight=1)
 
         self.topframe = tk.Frame(self.master, width = 100, height= 50)
         #self.topframe.pack(side=tk.TOP)
