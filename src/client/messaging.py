@@ -72,12 +72,19 @@ class Messaging:
         with open(self.conversation_path, 'r') as f:
                 lines = f.read().splitlines()
                 for line in lines:
-                    line = line.split(",")
-                    if line[1] == "You":
-                        self.listbox.insert(tk.END, "You: " + line[2]) 
+                    # Split line into parts to get timestamp and sender
+                    parts = line.split(",")
+
+                    # Get message text without removing commas within
+                    line = line.replace(",", "", 1)
+                    message_start = line.index(",") + 1
+                    message = line[message_start:]
+
+                    if parts[1] == "You":
+                        self.listbox.insert(tk.END, "You: " + message) 
                         self.listbox.itemconfig(i, {'bg':'#c1c1d7'})
                     else:
-                        self.listbox.insert(tk.END, self.contact_name + ": " + line[2]) 
+                        self.listbox.insert(tk.END, self.contact_name + ": " + message) 
                         self.listbox.itemconfig(i, {'bg':'#ffffff'})
                     i += 1
 
@@ -360,11 +367,16 @@ if __name__ == "__main__":
     """root = tk.Tk(className="crypter")
     app = Messaging(root)"""
 
-    timestamp = "2021-03-0302:52:42.216"
+    """timestamp = "2021-03-0302:52:42.216"
     foo = datetime.datetime.strptime(timestamp, '%Y-%m-%d%H:%M:%S.%f')
     print(foo.date())
     print(foo.time())
     print(time.mktime(foo.timetuple()))
     #print(datetime.datetime.now(pytz.utc))
     print(time.time()*1000)
-    print(os.getcwd())
+    print(os.getcwd())"""
+
+    foo = "Hello, Bro"
+    foo2 = foo.index(",")
+    foo.remove(foo2)
+    print(foo2)
