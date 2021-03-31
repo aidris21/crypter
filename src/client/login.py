@@ -190,7 +190,7 @@ class createAccount:
         # Return to login screen
         self.master.destroy()
         root = tk.Tk(className="crypter")
-        app = Main(root)
+        app = Login(root)
 
     def account_taken(self):
         warning_label = tk.Label(text="That username is already taken!", anchor=tk.CENTER)

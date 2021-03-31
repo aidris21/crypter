@@ -242,7 +242,7 @@ class Messaging:
         for i in range(0, len(messages)):
             message = messages[i]
             if message["from"] == self.contact_id:
-                if i == len(new_messages) - 1:
+                if i == len(messages) - 1:
                     content = self.compile_message(message, draw=True)
                 else:
                     content = self.compile_message(message)
