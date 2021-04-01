@@ -164,7 +164,7 @@ class Messaging:
         self.master.update()
 
         # Equation
-        equation_string = "Equation: " + "(char^pubkey[1])mod(pubkey^2)" + "\n" + "-----------"
+        equation_string = "Equation: " + "(char^pubkey[1])mod(pubkey[2])" + "\n" + "-----------"
         equation_label = tk.Label(self.sidetop_frame, text=equation_string)
         equation_label.grid(row=3, column = 2)
         self.master.update()
