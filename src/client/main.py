@@ -9,6 +9,7 @@ import shutil
 from login import Login
 from contacts import Contacts
 from messaging import Messaging
+from createAccount import createAccount
 
 
 def contact_window(window_name = None, token = None):
@@ -23,12 +24,20 @@ def message_window(window_name, token, contact):
     if app.next == "backward":
         contact_window(app.window_name, app.token)
 
+def create_account(): 
+    root = tk.Tk(className="Create Account")
+    app = createAccount(root)
+    if app.next:
+        main()
+
 
 def main(): 
     root = tk.Tk(className="crypter")
     app = Login(root)
     if app.next:
         contact_window(app.window_name, app.token)
+    elif app.stay:
+        create_account()
 
 if __name__ == '__main__':
     main()
