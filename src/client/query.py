@@ -17,10 +17,12 @@ def login(username, password):
     r = rq.post(url = endpoint, data=json.dumps(data), headers=headers)
 
     post_return = r.json()
-
-    token = post_return["accessToken"]
-
-    return token
+    
+    if "code" in post_return and post_return["code"] == 401:
+        return None
+    else:
+        token = post_return["accessToken"]
+        return token
 
 def post_message(message, token, user_to = "6039a891cfcf715977b2365c"):
     endpoint = ENDPOINT + "messages"

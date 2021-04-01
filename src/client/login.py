@@ -77,12 +77,14 @@ class Login:
     def login(self, username, password):
         token = query.login(username, password)
 
-        self.master.destroy()
-        #root = tk.Tk(className="crypter")
-        #app = Contacts(root, token)
-        self.next = True
-        self.window_name = "crypter"
-        self.token = token
+        if token:
+            self.master.destroy()
+            #root = tk.Tk(className="crypter")
+            #app = Contacts(root, token)
+            self.next = True
+            self.window_name = "crypter"
+            self.token = token
+
 
     
     def create_account(self):
