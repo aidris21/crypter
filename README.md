@@ -1,5 +1,5 @@
 <h1> Crypter: An educational end-to-end encryption application </h1>
-<img src="crypter.png"
+<img src="./doc/crypter.png"
      alt="Not sure what the map has to do with it tbh...but it looks cool"
      style="float: left; margin-right: 10px;" />
 
