@@ -12,7 +12,7 @@ import os
 import pathlib
 
 import query
-from encrypt.rsa import encrypt, decrypt, RSA
+from encrypt.rsa import encrypt, decrypt, RSA, time_to_break
 
 class Messaging:
     def __init__(self, master, token, contact = None):
@@ -192,10 +192,17 @@ class Messaging:
         encrypted_label.grid(row=5, column = 2)
         self.master.update()
 
+        # Time to break
+        time_break = time_to_break(self.contact_key[1])
+        time_string = "If we had a 1 Ghz computer, factoring the public key and breaking this encryption would take about: " + "\n" + str(time_break) + " seconds. This is why real apps use longer numbers!"
+        time_label = tk.Label(self.sidetop_frame, text=time_string)
+        time_label.grid(row=6, column = 2)
+        self.master.update()
+
         # Clear button
         self.clearButton = tk.Button(self.sidetop_frame, text = 'Clear', width = 10)
         self.clearButton.bind("<Button-1>", self.clear_encrypt)
-        self.clearButton.grid(row=6, column = 2)
+        self.clearButton.grid(row=7, column = 2)
         self.master.update()
 
         return encrypted_message

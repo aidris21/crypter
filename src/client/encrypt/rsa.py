@@ -1,6 +1,7 @@
 from Crypto.Util import number
 import secrets
 import gmpy2
+import math
 from gmpy2 import mpz,mpq,mpfr,mpc
 
 # 10-bit number
@@ -103,6 +104,18 @@ def decrypt(encrypted_message, decryption_key, public_key):
 
         message = "".join(message)
         return message
+
+# Time to factor N in a public key, in seconds, assuming 1 Ghz
+def time_to_break(n):
+    comp1 = (64/9)**(1/3)
+    comp2 = math.log(n)**(1/3)
+    comp3 = (math.log(math.log(n)))**(2/3)
+
+    ans = math.exp(comp1 * comp2 * comp3)
+    op_per_sec = 1000000000
+    time = ans/op_per_sec
+
+    return time
 
 
 if __name__ == "__main__":
