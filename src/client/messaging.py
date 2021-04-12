@@ -187,7 +187,7 @@ class Messaging:
             j += 1
         encrypted_string = "".join(char for char in encrypted_string)
 
-        encrypted_string = "Encrypted Message: " + encrypted_string
+        encrypted_string = "Encrypted Message: " + encrypted_string + "\n" + "-----------"
         encrypted_label = tk.Label(self.sidetop_frame, text=encrypted_string)
         encrypted_label.grid(row=5, column = 2)
         self.master.update()
